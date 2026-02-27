@@ -1,0 +1,11 @@
+{
+  "type": "wuw:top",
+  "generator": {
+    "type": "minecraft:noise",
+    "settings": "wuw:limited_sector_top",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "wuw:wuwbiome"
+    }
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "has_precipitation": true, "temperature": 0.7, "downfall": 0.9, "temperature_modifier": "none",
+  "creature_spawn_probability": 0.15,
+  "effects": {
+    "sky_color": 7907327, "fog_color": 12638463, "water_color": 4159204, "water_fog_color": 329011,
+    "foliage_color": 5635840, "grass_color": 2634762, "grass_color_modifier": "dark_forest"
+  },
+  "spawners": {
+    "creature": [
+      { "type": "minecraft:sheep", "weight": 10, "minCount": 2, "maxCount": 4 },
+      { "type": "minecraft:cow", "weight": 10, "minCount": 2, "maxCount": 4 },
+      { "type": "minecraft:pig", "weight": 10, "minCount": 2, "maxCount": 4 },
+      { "type": "minecraft:chicken", "weight": 10, "minCount": 2, "maxCount": 4 }
+    ],
+    "monster": [
+      { "type": "minecraft:zombie", "weight": 200, "minCount": 3, "maxCount": 6 },
+      { "type": "minecraft:zombie_villager", "weight": 100, "minCount": 2, "maxCount": 4 },
+      { "type": "minecraft:husk", "weight": 100, "minCount": 3, "maxCount": 6 },
+      { "type": "minecraft:drowned", "weight": 100, "minCount": 3, "maxCount": 6 },
+      { "type": "minecraft:skeleton", "weight": 200, "minCount": 3, "maxCount": 6 },
+      { "type": "minecraft:stray", "weight": 100, "minCount": 3, "maxCount": 6 },
+      { "type": "minecraft:creeper", "weight": 200, "minCount": 3, "maxCount": 6 },
+      { "type": "minecraft:spider", "weight": 200, "minCount": 3, "maxCount": 6 },
+      { "type": "minecraft:cave_spider", "weight": 150, "minCount": 3, "maxCount": 6 },
+      { "type": "minecraft:enderman", "weight": 80, "minCount": 1, "maxCount": 3 },
+      { "type": "minecraft:witch", "weight": 80, "minCount": 1, "maxCount": 2 },
+      { "type": "minecraft:slime", "weight": 100, "minCount": 2, "maxCount": 4 },
+      { "type": "minecraft:phantom", "weight": 50, "minCount": 1, "maxCount": 2 },
+      { "type": "minecraft:pillager", "weight": 80, "minCount": 2, "maxCount": 5 },
+      { "type": "minecraft:ravager", "weight": 20, "minCount": 1, "maxCount": 1 },
+      { "type": "minecraft:evoker", "weight": 20, "minCount": 1, "maxCount": 1 },
+      { "type": "minecraft:vindicator", "weight": 50, "minCount": 1, "maxCount": 3 },
+      { "type": "minecraft:illusioner", "weight": 10, "minCount": 1, "maxCount": 1 },
+      { "type": "minecraft:blaze", "weight": 50, "minCount": 2, "maxCount": 4 },
+      { "type": "minecraft:wither_skeleton", "weight": 50, "minCount": 3, "maxCount": 5 }
+    ]
+  },
+  "spawn_costs": {},
+  "carvers": { "air": [ "minecraft:cave", "minecraft:canyon" ] },
+  "features": [
+    [],
+    [ "minecraft:lake_lava_surface" ],
+    [ "minecraft:forest_rock", "minecraft:amethyst_geode", "minecraft:blue_ice", "minecraft:iceberg_packed" ],
+    [ "minecraft:monster_room" ],
+    [],
+    [],
+    [],
+    [ "minecraft:glow_lichen", "minecraft:dripstone_cluster" ],
+    [ "minecraft:spring_water", "minecraft:spring_lava" ],
+    [
+      "minecraft:dark_forest_vegetation", "minecraft:trees_birch_and_oak", "minecraft:trees_jungle", "minecraft:trees_savanna",
+      "minecraft:trees_taiga", "minecraft:trees_mangrove", "minecraft:trees_cherry", "minecraft:trees_grove", "minecraft:bamboo_vegetation",
+      "minecraft:flower_plain", "minecraft:flower_forest_flowers", "minecraft:flower_swamp", "minecraft:flower_meadow", "minecraft:flower_cherry",
+      "minecraft:patch_grass_plain", "minecraft:patch_dead_bush", "minecraft:patch_melon", "minecraft:patch_pumpkin", "minecraft:patch_berry_bush",
+      "minecraft:patch_sugar_cane", "minecraft:brown_mushroom_normal", "minecraft:red_mushroom_normal", "minecraft:patch_cactus",
+      "minecraft:patch_sunflower", "minecraft:patch_waterlily", "minecraft:lush_caves_vegetation"
+    ],
+    [ "minecraft:freeze_top_layer", "minecraft:blue_ice", "minecraft:bamboo", "minecraft:vines", "minecraft:ice_spike" ]
+  ]
+}
