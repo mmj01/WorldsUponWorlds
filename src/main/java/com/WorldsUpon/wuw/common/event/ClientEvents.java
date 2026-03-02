@@ -1,4 +1,4 @@
-package com.WorldsUpon.wuw.common;
+package com.WorldsUpon.wuw.common.event;
 
 import com.WorldsUpon.wuw.common.init.wuwEffects;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;

@@ -1,6 +1,6 @@
 package com.WorldsUpon.wuw.common.event;
 
-import com.WorldsUpon.wuw.wuwBlocks;
+import com.WorldsUpon.wuw.common.block.wuwBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;

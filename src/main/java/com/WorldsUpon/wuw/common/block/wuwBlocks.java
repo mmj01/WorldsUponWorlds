@@ -1,6 +1,5 @@
-package com.WorldsUpon.wuw;
+package com.WorldsUpon.wuw.common.block;
 
-import com.WorldsUpon.wuw.common.block.floorbasic;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;

@@ -1,12 +1,11 @@
 package com.WorldsUpon.wuw;
 
+import com.WorldsUpon.wuw.common.MobSpawns.wuwMobs;
+import com.WorldsUpon.wuw.common.block.wuwBlocks;
 import com.WorldsUpon.wuw.common.init.wuwEffects;
-import net.minecraft.world.level.levelgen.feature.Feature;
-import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -39,7 +38,7 @@ public class WorldsUponWorlds {
 
         modEventBus.addListener(this::commonSetup);
 
-
+        wuwMobs.register(modEventBus);
         wuwBlocks.register(modEventBus);
         wuwEffects.MOB_EFFECTS.register(modEventBus);
         NeoForge.EVENT_BUS.register(this);
