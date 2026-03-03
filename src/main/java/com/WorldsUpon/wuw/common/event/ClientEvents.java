@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -31,61 +32,9 @@ public class ClientEvents {
     private static final int VERTICAL_RANGE = 32;
     private static final int FULL_RESCAN_INTERVAL = 200;
 
-    private static final Set<Block> IGNORED_BLOCKS = new HashSet<>();
-    static {
-        // Basic Terrain
-        IGNORED_BLOCKS.add(Blocks.AIR);
-        IGNORED_BLOCKS.add(Blocks.CAVE_AIR);
-        IGNORED_BLOCKS.add(Blocks.VOID_AIR);
-        IGNORED_BLOCKS.add(Blocks.STONE);
-        IGNORED_BLOCKS.add(Blocks.DEEPSLATE);
-        IGNORED_BLOCKS.add(Blocks.COBBLESTONE);
-        IGNORED_BLOCKS.add(Blocks.MOSSY_COBBLESTONE);
-        IGNORED_BLOCKS.add(Blocks.BEDROCK);
-
-        // Dirt & variants
-        IGNORED_BLOCKS.add(Blocks.DIRT);
-        IGNORED_BLOCKS.add(Blocks.GRASS_BLOCK);
-        IGNORED_BLOCKS.add(Blocks.COARSE_DIRT);
-        IGNORED_BLOCKS.add(Blocks.PODZOL);
-        IGNORED_BLOCKS.add(Blocks.ROOTED_DIRT);
-        IGNORED_BLOCKS.add(Blocks.MUD);
-        IGNORED_BLOCKS.add(Blocks.CLAY);
-
-        // Soft Stones
-        IGNORED_BLOCKS.add(Blocks.GRANITE);
-        IGNORED_BLOCKS.add(Blocks.DIORITE);
-        IGNORED_BLOCKS.add(Blocks.ANDESITE);
-        IGNORED_BLOCKS.add(Blocks.TUFF);
-        IGNORED_BLOCKS.add(Blocks.CALCITE);
-        IGNORED_BLOCKS.add(Blocks.DRIPSTONE_BLOCK);
-        IGNORED_BLOCKS.add(Blocks.GRAVEL);
-        IGNORED_BLOCKS.add(Blocks.SAND);
-        IGNORED_BLOCKS.add(Blocks.RED_SAND);
-        IGNORED_BLOCKS.add(Blocks.SANDSTONE);
-        IGNORED_BLOCKS.add(Blocks.RED_SANDSTONE);
-
-        // Nether / End
-        IGNORED_BLOCKS.add(Blocks.NETHERRACK);
-        IGNORED_BLOCKS.add(Blocks.BASALT);
-        IGNORED_BLOCKS.add(Blocks.BLACKSTONE);
-        IGNORED_BLOCKS.add(Blocks.SOUL_SAND);
-        IGNORED_BLOCKS.add(Blocks.SOUL_SOIL);
-        IGNORED_BLOCKS.add(Blocks.END_STONE);
-
-        // Liquids
-        IGNORED_BLOCKS.add(Blocks.WATER);
-        IGNORED_BLOCKS.add(Blocks.LAVA);
-
-        // Foliage
-        IGNORED_BLOCKS.add(Blocks.GLOW_LICHEN);
-        IGNORED_BLOCKS.add(Blocks.SEAGRASS);
-        IGNORED_BLOCKS.add(Blocks.TALL_SEAGRASS);
-        IGNORED_BLOCKS.add(Blocks.KELP);
-        IGNORED_BLOCKS.add(Blocks.KELP_PLANT);
-    }
-
+    // We only need the whitelist now!
     private static final Map<Block, Integer> BLOCK_COLORS = new HashMap<>();
+
     static {
         BLOCK_COLORS.put(Blocks.COAL_ORE, 0x333333);
         BLOCK_COLORS.put(Blocks.DEEPSLATE_COAL_ORE, 0x333333);
@@ -106,18 +55,17 @@ public class ClientEvents {
         BLOCK_COLORS.put(Blocks.DEEPSLATE_COPPER_ORE, 0xE77C56);
         BLOCK_COLORS.put(Blocks.ANCIENT_DEBRIS, 0x594239);
         BLOCK_COLORS.put(Blocks.AMETHYST_CLUSTER, 0xA678F1);
+        // You can easily add custom modded ores here too!
     }
 
     private record OreData(BlockPos pos, int color) {}
 
     private static final Map<Long, List<OreData>> chunkCache = new HashMap<>();
     private static ChunkPos lastPlayerChunk = null;
-
     private static double lastScanY = 0;
-
     private static int tickCounter = 0;
     private static boolean needsUpdate = false;
-    private static final double VERTICAL_THRESHOLD = 6.0; // Re-scan every 5 blocks
+    private static final double VERTICAL_THRESHOLD = 6.0;
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
@@ -126,6 +74,7 @@ public class ClientEvents {
 
         if (player == null || player.level() == null) return;
 
+        // Note: If XRAYEYE is a DeferredHolder, you might need wuwEffects.XRAYEYE.get()
         if (!player.hasEffect(wuwEffects.XRAYEYE)) {
             if (!chunkCache.isEmpty()) {
                 chunkCache.clear();
@@ -140,7 +89,6 @@ public class ClientEvents {
 
         boolean verticalChange = Math.abs(currentY - lastScanY) > VERTICAL_THRESHOLD;
 
-        // Check if we moved to a new chunk
         if (!Objects.equals(lastPlayerChunk, currentChunk)) {
             lastPlayerChunk = currentChunk;
             needsUpdate = true;
@@ -148,7 +96,7 @@ public class ClientEvents {
 
         if (verticalChange) {
             needsUpdate = true;
-            lastScanY = currentY; // Update scan height
+            lastScanY = currentY;
             chunkCache.clear();
         }
 
@@ -161,14 +109,9 @@ public class ClientEvents {
 
     private static void scanChunks(Level level, ChunkPos center) {
         Set<Long> validChunks = new HashSet<>();
-
         int playerY = (int) Minecraft.getInstance().player.getY();
-        int minWorldY = level.getMinBuildHeight();
-        int maxWorldY = level.getMaxBuildHeight();
 
-        // Calculate section indices
-        int minSectionIndex = (Math.max(minWorldY, playerY - VERTICAL_RANGE) - minWorldY) >> 4;
-        int maxSectionIndex = (Math.min(maxWorldY, playerY + VERTICAL_RANGE) - minWorldY) >> 4;
+        int minWorldY = level.getMinBuildHeight();
 
         for (int x = -CHUNK_RADIUS; x <= CHUNK_RADIUS; x++) {
             for (int z = -CHUNK_RADIUS; z <= CHUNK_RADIUS; z++) {
@@ -177,24 +120,21 @@ public class ClientEvents {
                 long chunkKey = ChunkPos.asLong(chunkX, chunkZ);
                 validChunks.add(chunkKey);
 
-                // Skip if already cached (unless we cleared cache above)
                 if (chunkCache.containsKey(chunkKey)) continue;
 
-                LevelChunk chunk = level.getChunkSource().getChunk(chunkX, chunkZ, false);
+                LevelChunk chunk = level.getChunk(chunkX, chunkZ);
                 if (chunk == null) continue;
 
                 List<OreData> oresInChunk = new ArrayList<>();
                 LevelChunkSection[] sections = chunk.getSections();
 
-                int start = Math.max(0, minSectionIndex);
-                int end = Math.min(sections.length - 1, maxSectionIndex);
-
-                for (int i = start; i <= end; i++) {
+                for (int i = 0; i < sections.length; i++) {
                     LevelChunkSection section = sections[i];
-
                     if (section == null || section.hasOnlyAir()) continue;
 
                     int sectionY = minWorldY + (i * 16);
+
+                    if (Math.abs(sectionY - playerY) > VERTICAL_RANGE + 16) continue;
 
                     for (int lx = 0; lx < 16; lx++) {
                         for (int ly = 0; ly < 16; ly++) {
@@ -202,23 +142,20 @@ public class ClientEvents {
                                 BlockState state = section.getBlockState(lx, ly, lz);
                                 Block block = state.getBlock();
 
-                                if (!IGNORED_BLOCKS.contains(block)) {
-                                    int worldX = (chunkX << 4) + lx;
-                                    int worldY = sectionY + ly;
-                                    int worldZ = (chunkZ << 4) + lz;
-
-                                    if (Math.abs(worldY - playerY) > VERTICAL_RANGE) continue;
-
-                                    int color;
-
-                                    if (BLOCK_COLORS.containsKey(block)) {
-                                        color = BLOCK_COLORS.get(block);
-                                    }
-                                    else {
-                                        color = state.getMapColor(level, new BlockPos(worldX, worldY, worldZ)).col;
-                                    }
-                                    oresInChunk.add(new OreData(new BlockPos(worldX, worldY, worldZ), color));
+                                // WHITELIST CHECK: If it's not in our colors map, skip it immediately!
+                                if (!BLOCK_COLORS.containsKey(block)) {
+                                    continue;
                                 }
+
+                                int worldY = sectionY + ly;
+                                if (Math.abs(worldY - playerY) > VERTICAL_RANGE) continue;
+
+                                int worldX = (chunkX << 4) + lx;
+                                int worldZ = (chunkZ << 4) + lz;
+
+                                // We already know the color exists in the map because it passed the check above
+                                int color = BLOCK_COLORS.get(block);
+                                oresInChunk.add(new OreData(new BlockPos(worldX, worldY, worldZ), color));
                             }
                         }
                     }
@@ -240,52 +177,56 @@ public class ClientEvents {
         Minecraft mc = Minecraft.getInstance();
         PoseStack poseStack = event.getPoseStack();
         Vec3 cameraPos = event.getCamera().getPosition();
-
-        double camX = cameraPos.x;
-        double camY = cameraPos.y;
-        double camZ = cameraPos.z;
-
         net.minecraft.client.renderer.culling.Frustum frustum = event.getFrustum();
 
-        RenderSystem.setShader(GameRenderer::getRendertypeLinesShader);
+        // 1. Prepare OpenGL state for X-Ray
         RenderSystem.disableDepthTest();
+        RenderSystem.disableCull();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
 
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
+        // CRITICAL: We must use the specific Lines shader
+        RenderSystem.setShader(GameRenderer::getRendertypeLinesShader);
 
-        // 3. DRAW LOOP
+        Tesselator tesselator = Tesselator.getInstance();
+
+        // CRITICAL FIX: renderLineBox requires Mode.LINES and POSITION_COLOR_NORMAL
+        BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
+
         for (List<OreData> ores : chunkCache.values()) {
             for (OreData ore : ores) {
                 BlockPos pos = ore.pos;
+                AABB aabb = new AABB(pos);
 
-                // Frustum Culling
-                if (frustum != null && !frustum.isVisible(new net.minecraft.world.phys.AABB(
-                        pos.getX(), pos.getY(), pos.getZ(),
-                        pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1))) {
+                if (frustum != null && !frustum.isVisible(aabb)) {
                     continue;
                 }
-
-                double x = pos.getX() - camX;
-                double y = pos.getY() - camY;
-                double z = pos.getZ() - camZ;
 
                 float r = ((ore.color >> 16) & 0xFF) / 255.0f;
                 float g = ((ore.color >> 8) & 0xFF) / 255.0f;
                 float b = (ore.color & 0xFF) / 255.0f;
 
-                LevelRenderer.renderLineBox(poseStack, buffer, x, y, z, x + 1, y + 1, z + 1, r, g, b, 1.0F);
+                // Draw the box
+                LevelRenderer.renderLineBox(
+                        poseStack,
+                        bufferbuilder,
+                        aabb.minX - cameraPos.x, aabb.minY - cameraPos.y, aabb.minZ - cameraPos.z,
+                        aabb.maxX - cameraPos.x, aabb.maxY - cameraPos.y, aabb.maxZ - cameraPos.z,
+                        r, g, b, 1.0F
+                );
             }
         }
 
-        // In 1.21, use 'buildOrThrow()' or 'end()' to get the MeshData
+        // 2. Draw the lines to the screen immediately
         try {
-            BufferUploader.drawWithShader(buffer.buildOrThrow());
+            BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
         } catch (Exception e) {
-            // Sometimes strict buffers fail if empty, ignore or handle
+            // Safely ignore empty buffers
         }
 
+        // 3. Restore standard OpenGL state
+        RenderSystem.enableCull();
         RenderSystem.enableDepthTest();
+        RenderSystem.disableBlend();
     }
 }

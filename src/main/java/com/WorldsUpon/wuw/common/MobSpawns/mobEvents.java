@@ -23,11 +23,11 @@ public class mobEvents {
             event.registerEntityRenderer(wuwMobs.WUW_SPIDER.get(), SpiderRenderer::new);
         }
     }
+
     @EventBusSubscriber(modid = "wuw", bus = EventBusSubscriber.Bus.MOD)
     public static class CommonEvents {
         @SubscribeEvent
         public static void registerSpawnPlacements(RegisterSpawnPlacementsEvent event) {
-            // Register ALL mobs with the same "Anywhere + Daylight" logic
             registerMyMob(event, wuwMobs.WUW_ZOMBIE.get());
             registerMyMob(event, wuwMobs.WUW_SPIDER.get());
             registerMyMob(event, wuwMobs.WUW_SKELETON.get());
@@ -35,15 +35,12 @@ public class mobEvents {
             registerMyMob(event, wuwMobs.WUW_CREEPER.get());
         }
 
-        // Helper method to save typing
         private static void registerMyMob(RegisterSpawnPlacementsEvent event, net.minecraft.world.entity.EntityType<?> type) {
             event.register(
                     type,
                     SpawnPlacementTypes.ON_GROUND,
                     Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
-                    (entityType, level, spawnType, pos, random) -> {
-                        return true;
-                    },
+                    (entityType, level, spawnType, pos, random) -> !level.getBlockState(pos.below()).is(Blocks.STONE),
                     RegisterSpawnPlacementsEvent.Operation.REPLACE
             );
         }
