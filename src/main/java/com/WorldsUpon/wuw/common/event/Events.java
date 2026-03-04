@@ -13,9 +13,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 @EventBusSubscriber(modid = WorldsUponWorlds.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class Events {
 
-    public static final ResourceKey<Level> FILLER_SECTOR =
-            ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION,
-                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(WorldsUponWorlds.MODID, "filler_sector"));
+
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
@@ -25,7 +23,7 @@ public class Events {
 
         if (event.getEntity() instanceof ServerPlayer player) {
 
-            if (player.level().dimension() == FILLER_SECTOR) {
+            if (player.level().dimension() != Level.OVERWORLD) {
 
 
                 boolean hasEffect = player.hasEffect(wuwEffects.XRAYEYE);
@@ -37,7 +35,7 @@ public class Events {
                             300,
                             0,
                             false,
-                            true,
+                            false,
                             true
                     ));
                 }

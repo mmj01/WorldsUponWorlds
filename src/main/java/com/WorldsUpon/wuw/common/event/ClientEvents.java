@@ -1,5 +1,6 @@
 package com.WorldsUpon.wuw.common.event;
 
+import com.WorldsUpon.wuw.common.block.wuwBlocks;
 import com.WorldsUpon.wuw.common.init.wuwEffects;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -7,6 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -32,30 +35,22 @@ public class ClientEvents {
     private static final int VERTICAL_RANGE = 32;
     private static final int FULL_RESCAN_INTERVAL = 200;
 
-    // We only need the whitelist now!
-    private static final Map<Block, Integer> BLOCK_COLORS = new HashMap<>();
+    private static final Map<ResourceLocation, Integer> BLOCK_COLORS = new HashMap<>();
 
-    static {
-        BLOCK_COLORS.put(Blocks.COAL_ORE, 0x333333);
-        BLOCK_COLORS.put(Blocks.DEEPSLATE_COAL_ORE, 0x333333);
-        BLOCK_COLORS.put(Blocks.IRON_ORE, 0xD8AF93);
-        BLOCK_COLORS.put(Blocks.DEEPSLATE_IRON_ORE, 0xD8AF93);
-        BLOCK_COLORS.put(Blocks.GOLD_ORE, 0xFCEE4B);
-        BLOCK_COLORS.put(Blocks.DEEPSLATE_GOLD_ORE, 0xFCEE4B);
-        BLOCK_COLORS.put(Blocks.NETHER_GOLD_ORE, 0xFCEE4B);
-        BLOCK_COLORS.put(Blocks.DIAMOND_ORE, 0x00FFFF);
-        BLOCK_COLORS.put(Blocks.DEEPSLATE_DIAMOND_ORE, 0x00FFFF);
-        BLOCK_COLORS.put(Blocks.LAPIS_ORE, 0x0000FF);
-        BLOCK_COLORS.put(Blocks.DEEPSLATE_LAPIS_ORE, 0x0000FF);
-        BLOCK_COLORS.put(Blocks.REDSTONE_ORE, 0xFF0000);
-        BLOCK_COLORS.put(Blocks.DEEPSLATE_REDSTONE_ORE, 0xFF0000);
-        BLOCK_COLORS.put(Blocks.EMERALD_ORE, 0x00FF00);
-        BLOCK_COLORS.put(Blocks.DEEPSLATE_EMERALD_ORE, 0x00FF00);
-        BLOCK_COLORS.put(Blocks.COPPER_ORE, 0xE77C56);
-        BLOCK_COLORS.put(Blocks.DEEPSLATE_COPPER_ORE, 0xE77C56);
-        BLOCK_COLORS.put(Blocks.ANCIENT_DEBRIS, 0x594239);
-        BLOCK_COLORS.put(Blocks.AMETHYST_CLUSTER, 0xA678F1);
-        // You can easily add custom modded ores here too!
+    private static void initBlockColors() {
+        if (!BLOCK_COLORS.isEmpty()) return;
+
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.COAL_ORE.get()), 0x333333);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.IRON_ORE.get()), 0xD8AF93);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.HCP_IRON_ORE.get()), 0x594239);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.GOLD_ORE.get()), 0xFCEE4B);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.DIAMOND_ORE.get()), 0x00FFFF);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.LAPIS_ORE.get()), 0x0000FF);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.REDSTONE_ORE.get()), 0xFF0000);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.EMERALD_ORE.get()), 0x00FF00);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.COPPER_ORE.get()), 0xE77C56);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(Blocks.ANCIENT_DEBRIS), 0x594239);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(Blocks.AMETHYST_BLOCK), 0xA678F1);
     }
 
     private record OreData(BlockPos pos, int color) {}
@@ -69,12 +64,12 @@ public class ClientEvents {
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
+        initBlockColors();
+
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-
         if (player == null || player.level() == null) return;
 
-        // Note: If XRAYEYE is a DeferredHolder, you might need wuwEffects.XRAYEYE.get()
         if (!player.hasEffect(wuwEffects.XRAYEYE)) {
             if (!chunkCache.isEmpty()) {
                 chunkCache.clear();
@@ -141,9 +136,9 @@ public class ClientEvents {
                             for (int lz = 0; lz < 16; lz++) {
                                 BlockState state = section.getBlockState(lx, ly, lz);
                                 Block block = state.getBlock();
+                                ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(block);
 
-                                // WHITELIST CHECK: If it's not in our colors map, skip it immediately!
-                                if (!BLOCK_COLORS.containsKey(block)) {
+                                if (!BLOCK_COLORS.containsKey(blockId)) {
                                     continue;
                                 }
 
@@ -152,9 +147,7 @@ public class ClientEvents {
 
                                 int worldX = (chunkX << 4) + lx;
                                 int worldZ = (chunkZ << 4) + lz;
-
-                                // We already know the color exists in the map because it passed the check above
-                                int color = BLOCK_COLORS.get(block);
+                                int color = BLOCK_COLORS.get(blockId);
                                 oresInChunk.add(new OreData(new BlockPos(worldX, worldY, worldZ), color));
                             }
                         }
@@ -174,23 +167,17 @@ public class ClientEvents {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
         if (chunkCache.isEmpty()) return;
 
-        Minecraft mc = Minecraft.getInstance();
         PoseStack poseStack = event.getPoseStack();
         Vec3 cameraPos = event.getCamera().getPosition();
         net.minecraft.client.renderer.culling.Frustum frustum = event.getFrustum();
 
-        // 1. Prepare OpenGL state for X-Ray
         RenderSystem.disableDepthTest();
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-
-        // CRITICAL: We must use the specific Lines shader
         RenderSystem.setShader(GameRenderer::getRendertypeLinesShader);
 
         Tesselator tesselator = Tesselator.getInstance();
-
-        // CRITICAL FIX: renderLineBox requires Mode.LINES and POSITION_COLOR_NORMAL
         BufferBuilder bufferbuilder = tesselator.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
 
         for (List<OreData> ores : chunkCache.values()) {
@@ -206,7 +193,6 @@ public class ClientEvents {
                 float g = ((ore.color >> 8) & 0xFF) / 255.0f;
                 float b = (ore.color & 0xFF) / 255.0f;
 
-                // Draw the box
                 LevelRenderer.renderLineBox(
                         poseStack,
                         bufferbuilder,
@@ -217,14 +203,11 @@ public class ClientEvents {
             }
         }
 
-        // 2. Draw the lines to the screen immediately
         try {
             BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
         } catch (Exception e) {
-            // Safely ignore empty buffers
         }
 
-        // 3. Restore standard OpenGL state
         RenderSystem.enableCull();
         RenderSystem.enableDepthTest();
         RenderSystem.disableBlend();
