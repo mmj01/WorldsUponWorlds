@@ -42,13 +42,15 @@ public class ClientEvents {
 
         BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.COAL_ORE.get()), 0x333333);
         BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.IRON_ORE.get()), 0xD8AF93);
-        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.HCP_IRON_ORE.get()), 0x594239);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.ALLOY.get()), 0x594239);
         BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.GOLD_ORE.get()), 0xFCEE4B);
         BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.DIAMOND_ORE.get()), 0x00FFFF);
         BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.LAPIS_ORE.get()), 0x0000FF);
         BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.REDSTONE_ORE.get()), 0xFF0000);
         BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.EMERALD_ORE.get()), 0x00FF00);
         BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.COPPER_ORE.get()), 0xE77C56);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.TITANIUM.get()), 0xA678F1);
+        BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(wuwBlocks.ALUMINUM.get()), 0x00FF00);
         BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(Blocks.ANCIENT_DEBRIS), 0x594239);
         BLOCK_COLORS.put(BuiltInRegistries.BLOCK.getKey(Blocks.AMETHYST_BLOCK), 0xA678F1);
     }

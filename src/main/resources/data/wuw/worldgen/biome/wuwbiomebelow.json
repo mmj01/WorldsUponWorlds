@@ -1,0 +1,85 @@
+{
+  "has_precipitation": true,
+  "temperature": 0.7,
+  "downfall": 0.9,
+  "temperature_modifier": "none",
+  "creature_spawn_probability": 0.65,
+  "effects": {
+    "sky_color": 7907327,
+    "fog_color": 12638463,
+    "water_color": 4159204,
+    "water_fog_color": 329011,
+    "foliage_color": 5635840,
+    "grass_color": 2634762,
+    "grass_color_modifier": "dark_forest"
+  },
+  "spawners": {
+    "creature": [
+      { "type": "wuw:wuw_zombie", "weight": 200, "minCount": 5, "maxCount": 6 },
+      { "type": "wuw:wuw_skeleton", "weight": 200, "minCount": 5, "maxCount": 6 },
+      { "type": "wuw:wuw_creeper", "weight": 200, "minCount": 5, "maxCount": 6 },
+      { "type": "wuw:wuw_enderman", "weight": 80, "minCount": 5, "maxCount": 5 }
+    ],
+    "monster": [
+      { "type": "wuw:wuw_spider", "weight": 2000, "minCount": 5, "maxCount": 6 },
+      { "type": "minecraft:cave_spider", "weight": 150, "minCount": 5, "maxCount": 6 },
+      { "type": "minecraft:evoker", "weight": 200, "minCount": 5, "maxCount": 5 },
+      { "type": "minecraft:vindicator", "weight": 500, "minCount": 5, "maxCount": 5 }
+    ]
+  },
+  "spawn_costs": {
+    "wuw:wuw_zombie": { "energy_budget": 1.0, "charge": 0.02 },
+    "wuw:wuw_skeleton": { "energy_budget": 1.0, "charge": 0.02 },
+    "wuw:wuw_creeper": { "energy_budget": 1.0, "charge": 0.02 },
+    "wuw:wuw_enderman": { "energy_budget": 1.0, "charge": 0.05 },
+    "wuw:wuw_spider": { "energy_budget": 1.0, "charge": 0.01 },
+    "minecraft:evoker": { "energy_budget": 1.0, "charge": 0.05 },
+    "minecraft:vindicator": { "energy_budget": 1.0, "charge": 0.02 }
+
+  },
+  "carvers": {
+    "air": [
+      "minecraft:cave",
+      "minecraft:canyon"
+    ]
+  },
+  "features": [
+    [],
+    [],
+    [
+      "minecraft:amethyst_geode",
+      "minecraft:fossil_upper",
+      "minecraft:fossil_lower"
+    ],
+    [
+      "minecraft:monster_room"
+    ],
+    [],
+    [],
+    [
+      "wuw:iron_ores_placed",
+      "wuw:redstone_ores_placed",
+      "wuw:emerald_ores_placed",
+      "wuw:aluminum_ores_placed"
+
+
+    ],
+    [
+      "minecraft:glow_lichen",
+      "minecraft:dripstone_cluster",
+      "minecraft:large_dripstone",
+      "minecraft:pointed_dripstone",
+      "minecraft:lush_caves_ceiling_vegetation",
+      "minecraft:lush_caves_clay",
+      "minecraft:spore_blossom",
+      "minecraft:sculk_patch_deep_dark",
+      "minecraft:sculk_vein"
+    ],
+    [
+      "minecraft:spring_water",
+      "minecraft:spring_lava"
+    ],
+    [],
+    []
+  ]
+}

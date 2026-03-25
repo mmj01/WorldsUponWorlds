@@ -6,7 +6,7 @@
     "targets": [
       {
         "state": {
-          "Name": "wuw:hcpironore"
+          "Name": "wuw:aluminumore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",
@@ -15,7 +15,7 @@
       },
       {
         "state": {
-          "Name": "wuw:hcpironore"
+          "Name": "wuw:aluminumore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",
